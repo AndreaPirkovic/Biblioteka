@@ -1,0 +1,58 @@
+package pirkovic.andrea;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+public class Insert {
+
+	public static void main(String[] args) {
+		
+		
+				String url = "jdbc:mysql://localhost:3306/biblioteka";
+				String username="root";
+				String password = "";
+				System.out.println("Konekcija....");
+				try (Connection conn= DriverManager.getConnection(url,username,password)){
+					
+					System.out.println("Uspesna konekcija ka bazi.");
+				String sqlinsert ="Insert into knjige(ISBN,naziv,jezik,izdavac,odeljenjeID)values(?,?,?,?,?)";
+				
+				PreparedStatement  ps= conn.prepareStatement(sqlinsert);
+				
+				
+				
+				ps.setInt(1,97886521);
+				ps.setString(2,"Rečnik slovenske mitologije");
+				ps.setString(3,"srpski");
+				ps.setString(4,"Laguna");
+				ps.setInt(5,2);
+				 
+				
+				
+				
+				ps.setInt(1,97886524);
+				ps.setString(2,"Rad: Od kamenog doba do robota");
+				ps.setString(3,"srpski");
+				ps.setString(4,"Laguna");
+				ps.setInt(5,1);
+				
+				int unetPodatak= ps.executeUpdate(); 
+				
+				if(unetPodatak>0)
+				
+				System.out.println("Podatak je upisan.");	
+				
+				
+				} catch (SQLException e) {
+					
+					e.printStackTrace();
+				}
+
+			}
+
+
+	}
+
+

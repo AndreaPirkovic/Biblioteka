@@ -1,0 +1,190 @@
+CREATE DATABASE biblioteka;
+
+CREATE TABLE IF NOT EXISTS `Biblioteka` (
+  `BibliotekaID` INT NOT NULL,
+  `naziv` VARCHAR(45) NOT NULL,
+  `mesto` VARCHAR(45) NOT NULL,
+  `ulica` VARCHAR(45) NOT NULL,
+  `brojUlice` VARCHAR(45) NOT NULL,
+  `telefon` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`BibliotekaID`))
+ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS `Članovi` (
+  `clanskaKarta` INT NOT NULL,
+  `Ime` VARCHAR(45) NOT NULL,
+  `Prezime` VARCHAR(45) NOT NULL,
+  `datumRodjenja` DATE NOT NULL,
+  `telefon` VARCHAR(45) NULL,
+  PRIMARY KEY (`clanskaKarta`))
+ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS `Bibliotekar` (
+  `zaposleniID` INT NOT NULL,
+  `ime` VARCHAR(45) NOT NULL,
+  `prezime` VARCHAR(45) NOT NULL,
+  `ulica` VARCHAR(45) NOT NULL,
+  `brojUlice` VARCHAR(45) NOT NULL,
+  `mesto` VARCHAR(45) NOT NULL,
+  `JMBG` INT(13) NOT NULL,
+  `telefon` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`zaposleniID`))
+ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS `autori` (
+  `ime` VARCHAR(45) NOT NULL,
+  `prezime` VARCHAR(45) NOT NULL,
+  `autorID` INT NOT NULL,
+  PRIMARY KEY (`autorID`))
+ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS `Knjige` (
+  `knjigaID` INT NOT NULL,
+  `ISBN` BIGINT NOT NULL,
+  `naziv` VARCHAR(45) NOT NULL,
+  `jezik` ENUM('engleski', 'srpski', 'ruski', 'francuski', 'nemacki') NOT NULL,
+  `izdavac` VARCHAR(45) NOT NULL,
+  `brKnjigaNaStanju` INT NOT NULL,
+  PRIMARY KEY (`knjigaID`))
+ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS `knjigeAutori` (
+  `knjigeAutoriID` INT NOT NULL,
+  `knjigaID` INT NOT NULL,
+  `autoriID` INT NOT NULL,
+  PRIMARY KEY (`knjigeAutoriID`),
+    FOREIGN KEY (`autoriID`)
+    REFERENCES `autori` (`autorID`)
+    ON DELETE NO ACTION
+    ON UPDATE CASCADE,
+  
+    FOREIGN KEY (`knjigaID`)
+    REFERENCES `Knjige` (`knjigaID`)
+    ON DELETE NO ACTION
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS `PozajmnoOdeljenje` (
+  `iznajmljivanjeID` INT NOT NULL AUTO_INCREMENT,
+  `zaposleniID` INT NOT NULL,
+  `clanskaKarta` INT NOT NULL,
+  `datumIzdavanja` DATE NOT NULL,
+  `datumVracanja` DATE NOT NULL,
+  `zanr` ENUM('istorija', 'drama', 'fantastika', 'poezija', 'knjige_za_decu', 'tinejdz', 'popularna_nauka') NOT NULL,
+  `aktuelnost` VARCHAR(45) NOT NULL,
+  `knjigaID` INT NOT NULL,
+  `bibliotekaID` INT NOT NULL,
+  PRIMARY KEY (`iznajmljivanjeID`),
+    FOREIGN KEY (`clanskaKarta`)
+    REFERENCES `Članovi` (`clanskaKarta`)
+    ON DELETE NO ACTION
+    ON UPDATE CASCADE,
+ 
+    FOREIGN KEY (`zaposleniID`)
+    REFERENCES `Bibliotekar` (`zaposleniID`)
+    ON DELETE NO ACTION
+    ON UPDATE CASCADE,
+ 
+    FOREIGN KEY (`knjigaID`)
+    REFERENCES `Knjige` (`knjigaID`)
+    ON DELETE NO ACTION
+    ON UPDATE CASCADE,
+ 
+    FOREIGN KEY (`bibliotekaID`)
+    REFERENCES `Biblioteka` (`BibliotekaID`)
+    ON DELETE NO ACTION
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS `NaucnoOdeljenje` (
+  `naucneOblasti` ENUM('matematika', 'biologija', 'medicina', 'hemija', 'fizika', 'geografija', 'informatika') NOT NULL,
+  `odeljenjeID` INT NOT NULL AUTO_INCREMENT ,
+   `bibliotekaID` INT NOT NULL,
+  `knjigaID` INT NOT NULL,
+  PRIMARY KEY (`odeljenjeID`),
+  
+    FOREIGN KEY (`knjigaID`)
+    REFERENCES `Knjige` (`knjigaID`)
+    ON DELETE NO ACTION
+    ON UPDATE CASCADE,
+  
+    FOREIGN KEY (`bibliotekaID`)
+    REFERENCES `Biblioteka` (`BibliotekaID`)
+    ON DELETE NO ACTION
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS `dečijeOdeljenje` (
+  `odeljenjeID` INT NOT NULL AUTO_INCREMENT,
+  `uzrast` ENUM('1-3', '3-7', '7-15', '15-18') NOT NULL,
+   `bibliotekaID` INT NOT NULL,
+  `knjigaID` INT NOT NULL,
+  PRIMARY KEY (`odeljenjeID`),
+  
+    FOREIGN KEY (`knjigaID`)
+    REFERENCES `Knjige` (`knjigaID`)
+    ON DELETE NO ACTION
+    ON UPDATE CASCADE,
+ 
+    FOREIGN KEY (`bibliotekaID`)
+    REFERENCES `Biblioteka` (`BibliotekaID`)
+    ON DELETE NO ACTION
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS `BibiotekaZaposleni` (
+  `idBibiotekaZaposleni` INT NOT NULL,
+  `bibliotekaID` INT NOT NULL,
+  `zaposleniID` INT NOT NULL,
+  PRIMARY KEY (`idBibiotekaZaposleni`),
+    FOREIGN KEY (`zaposleniID`)
+    REFERENCES `Bibliotekar` (`zaposleniID`)
+    ON DELETE NO ACTION
+    ON UPDATE CASCADE,
+  
+    FOREIGN KEY (`bibliotekaID`)
+    REFERENCES `Biblioteka` (`BibliotekaID`)
+    ON DELETE NO ACTION
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS `BibliotekaClanovi` (
+  `idBibliotekaClanovi` INT NOT NULL,
+  `BibliotekaID` INT NOT NULL,
+  `clanskaKarta` INT NOT NULL,
+    FOREIGN KEY (`BibliotekaID`)
+    REFERENCES `Biblioteka` (`BibliotekaID`)
+    ON DELETE NO ACTION
+    ON UPDATE CASCADE,
+ 
+    FOREIGN KEY (`clanskaKarta`)
+    REFERENCES `Članovi` (`clanskaKarta`)
+    ON DELETE NO ACTION
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+INSERT INTO `članovi`(`clanskaKarta`, `Ime`, `Prezime`, `datumRodjenja`, `telefon`) VALUES (1245,'Ana','Anic','2007-07-19','0658179187'),(1233,'Pera','Peric','1980-12-20','069345187')
+
+INSERT INTO `bibliotekar`(`zaposleniID`, `ime`, `prezime`, `ulica`, `brojUlice`, `mesto`, `JMBG`, `telefon`) VALUES (234,'Marko','Markovic','Banatska','55a','Beograd',0404986213412,'0608238282'),(125,'Milica','Jovanovic','Prvomajska','123','Novi Sad',0805983716158,'0656262919')
+
+INSERT INTO `autori`(`ime`, `prezime`, `autorID`) VALUES ('Juval Noa','Harari',1),('Antoan','de Sent Egziperi',2),('Mičio ','Kaku',3),('Džordž', 'Martin',4)
+
+INSERT INTO `knjige`(`knjigaID`, `ISBN`, `naziv`, `jezik`, `izdavac`, `brKnjigaNaStanju`) VALUES (1,9788652135332,'Sapijens: Kratka istorija čovečanstva','srpski','Laguna',5),(2,9788652122158,'Mali princ','srpski','Laguna',3 ),(3,9788686059727,'Fizika nemogućeg','srpski',' Heliks',2),(4,9780006486114,'A Dance With Dragons (A Song of Ice and Fire, Book 5)','engleski','Harper Voyager',5)
+
+INSERT INTO `biblioteka`(`BibliotekaID`, `naziv`, `mesto`, `ulica`, `brojUlice`, `telefon`) VALUES (1,'Gradska biblioteka','Novi Sad','Dunavska','1',' 021451233'),(2, 'Sveti Sava','Beograd','Petra Zrinjskog','8',' 0113077616')
+
+INSERT INTO `bibiotekazaposleni`(`idBibiotekaZaposleni`, `bibliotekaID`, `zaposleniID`) VALUES (1,1,125),(2,2,234)
+
+INSERT INTO `bibliotekaclanovi`(`idBibliotekaClanovi`, `BibliotekaID`, `clanskaKarta`) VALUES (1,1,1233),(2,2,1245)
+
+INSERT INTO `knjigeautori`(`knjigeAutoriID`, `knjigaID`, `autoriID`) VALUES (1,1,1),(2,2,2),(3,3,3),(4,4,4)
+
+INSERT INTO `dečijeodeljenje`( `uzrast`,  `bibliotekaID`, `knjigaID`) VALUES ('7-15',1,2),('15-18',2,4)
+
+INSERT INTO `naucnoodeljenje`(`naucneOblasti`,  `bibliotekaID`, `knjigaID`) VALUES ('fizika',2,3),('biologija',1,1)
+
+INSERT INTO `pozajmnoodeljenje`(`zaposleniID`, `clanskaKarta`, `datumIzdavanja`, `datumVracanja`, `zanr`, `aktuelnost`, `knjigaID`, `bibliotekaID`) VALUES (234,1245,'2023-04-04','2023-05-05','fantastika','best seller',4,2),(125,1233,'2023-03-03','2023-04-04','popularna_nauka',' ',3,1)
+
+
+
+
